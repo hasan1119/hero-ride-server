@@ -45,7 +45,7 @@ async function run() {
       riderInfo.profile = imgProcessor(req?.files?.profile);
       riderInfo.nid = imgProcessor(req?.files?.nid);
       riderInfo.license = imgProcessor(req?.files?.license);
-      riderInfo.blocked = false;
+      riderInfo.status = "Active";
 
       const result = await user_collection.insertOne(riderInfo);
       res.json(result.insertedId);
@@ -60,7 +60,7 @@ async function run() {
       const learnerInfo = req.body;
       learnerInfo.profile = imgProcessor(req?.files?.profile);
       learnerInfo.nid = imgProcessor(req?.files?.nid);
-      learnerInfo.blocked = false;
+      learnerInfo.status = "Active";
       const result = await user_collection.insertOne(learnerInfo);
       res.json(result.insertedId);
     });
@@ -77,18 +77,17 @@ async function run() {
       res.json(result);
     });
 
-    app.put("/blockUser", async (req, res) => {
-      const isBlock = req.body.isChecked;
+    app.put("/changestatus", async (req, res) => {
       const id = req.body.id;
+      const status = req.body.status;
 
       const result = await user_collection.updateOne(
         { _id: ObjectId(id) },
         {
-          $set: { blocked: isBlock },
+          $set: { status },
         }
       );
       res.json(result.modifiedCount);
-      console.log(result);
     });
 
     app.get("/lessions", async (req, res) => {
@@ -101,7 +100,6 @@ async function run() {
       const result = await lession_collection.findOne({
         _id: ObjectId(id),
       });
-      console.log(result);
       res.json(result);
     });
 
